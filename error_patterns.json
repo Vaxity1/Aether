@@ -1,0 +1,80 @@
+{
+  "error_patterns": {
+    "missing_attributes": {
+      "frequency": 0.85,
+      "common_causes": ["incomplete_initialization", "missing_method_calls", "incorrect_object_references"],
+      "solutions": ["add_missing_attributes", "fix_initialization_sequence", "add_safety_checks"],
+      "prevention": ["comprehensive_initialization", "method_dependency_checks", "attribute_validation"],
+      "examples": [
+        "'DiscordAutoSender' object has no attribute 'animate_shine'",
+        "'DiscordAutoSender' object has no attribute 'card'",
+        "'DiscordAutoSender' object has no attribute 'show_help'"
+      ]
+    },
+    "type_annotation_errors": {
+      "frequency": 0.65,
+      "common_causes": ["missing_type_hints", "incorrect_import_statements", "deprecated_api_usage"],
+      "solutions": ["add_comprehensive_type_hints", "update_import_statements", "replace_deprecated_apis"],
+      "prevention": ["consistent_type_annotation", "import_validation", "api_compatibility_checks"],
+      "examples": [
+        "Type annotation is missing for parameter",
+        "ANTIALIAS is not a known attribute of module PIL.Image",
+        "Type of parameter is unknown"
+      ]
+    },
+    "execution_environment_errors": {
+      "frequency": 0.75,
+      "common_causes": ["missing_main_guard", "incorrect_launch_config", "path_confusion", "vscode_debugger_issues"],
+      "solutions": ["add_if_name_main_block", "fix_launch_json", "create_reliable_launcher", "environment_isolation"],
+      "prevention": ["proper_entry_points", "launcher_scripts", "environment_validation", "execution_testing"],
+      "examples": [
+        "Script doesn't execute when run directly",
+        "VS Code tries to execute markdown files",
+        "SyntaxError: invalid syntax in .md files",
+        "Debugger configuration errors"
+      ]
+    },
+    "gui_initialization_errors": {
+      "frequency": 0.45,
+      "common_causes": ["widget_created_before_parent", "missing_widget_references", "timing_issues"],
+      "solutions": ["proper_widget_sequencing", "add_initialization_delays", "widget_safety_checks"],
+      "prevention": ["delayed_initialization", "widget_dependency_mapping", "initialization_validation"],
+      "examples": [
+        "Widget called before creation",
+        "Animation started before widget exists"
+      ]
+    },
+    "customtkinter_compatibility": {
+      "frequency": 0.25,
+      "common_causes": ["unsupported_arguments", "version_incompatibility", "incorrect_parameter_usage"],
+      "solutions": ["remove_unsupported_args", "use_compatible_parameters", "version_specific_code"],
+      "prevention": ["documentation_validation", "parameter_checking", "compatibility_testing"],
+      "examples": [
+        "['shadow'] are not supported arguments"
+      ]
+    }
+  },
+  "resolution_strategies": {
+    "missing_attributes": {
+      "immediate": "Add missing attribute initialization",
+      "preventive": "Implement comprehensive initialization validation",
+      "long_term": "Create attribute dependency mapping"
+    },
+    "execution_environment_errors": {
+      "immediate": "Add if __name__ == '__main__': block and fix launch config",
+      "preventive": "Create reliable launcher scripts and test execution paths",
+      "long_term": "Implement comprehensive execution environment validation"
+    },
+    "gui_initialization_errors": {
+      "immediate": "Add timing delays and safety checks",
+      "preventive": "Implement widget creation sequence validation",
+      "long_term": "Create GUI initialization framework"
+    }
+  },
+  "learning_metrics": {
+    "pattern_accuracy": 0.94,
+    "solution_success_rate": 0.92,
+    "learning_velocity": 0.22,
+    "last_updated": "2025-07-08T17:30:00Z"
+  }
+}

@@ -1,0 +1,21 @@
+{
+    "recommendations": [
+        "visualstudioexptteam.vscodeintellicode",
+        "ms-vscode.vscode-websearchforcopilot",
+    "visualstudioexptteam.intellicode-api-usage-examples",
+    "ms-python.debugpy",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "kevinrose.vsc-python-indent",
+    "njpwerner.autodocstring",
+    "donjayamanne.python-extension-pack",
+    "tushortz.python-extended-snippets",
+    "mgesbert.python-path",
+    "zhoufeng.pyqt-integration",
+    "nikolapaunovic.tkinter-snippets",
+    "battlebas.kivy-vscode",
+    "seanwu.vscode-qt-for-python",
+    "acezx.pysimplegui-snippets",
+    "ashhaddevlab.customtkinter-snippets"
+]
+}

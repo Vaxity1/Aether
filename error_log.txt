@@ -1,0 +1,156 @@
+# Error Log - Discord Automation Script
+# -------------------------------------
+# Each entry includes timestamp, error type, message, context, and resolution summary.
+
+[2025-07-08 10:26:24.441011] Fatal: ['shadow'] are not supported arguments. Look at the documentation for supported arguments.
+Context: Traceback (most recent call last):
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 272, in main
+    app = DiscordAutoSender(root)
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 91, in __init__
+    self.build_gui()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 95, in build_gui
+    self.card = ctk.CTkFrame(self.root, corner_radius=25, fg_color=("#23272A", "#23272A"), border_width=2, border_color="#2C2F33", shadow=True)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\vaxit\AppData\Local\Programs\Python\Python313\Lib\site-packages\customtkinter\windows\widgets\ctk_frame.py", line 33, in __init__
+    super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\vaxit\AppData\Local\Programs\Python\Python313\Lib\site-packages\customtkinter\windows\widgets\core_widget_classes\ctk_base_class.py", line 46, in __init__
+    check_kwargs_empty(kwargs, raise_error=True)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\vaxit\AppData\Local\Programs\Python\Python313\Lib\site-packages\customtkinter\windows\widgets\utility\utility_functions.py", line 18, in check_kwargs_empty
+    raise ValueError(f"{list(kwargs_dict.keys())} are not supported arguments. Look at the documentation for supported arguments.")
+ValueError: ['shadow'] are not supported arguments. Look at the documentation for supported arguments.
+
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 11:46:40.541410] Fatal: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: Exception in main()
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 11:46:49.829894] Fatal: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: Exception in main()
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 11:49:33.119485] Fatal: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: Exception in main()
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 11:49:36.250265] Fatal: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: Exception in main()
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 11:49:46.013582] Fatal: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: Exception in main()
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 11:49:56.936857] Fatal: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: Exception in main()
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 11:50:24.116169] Fatal: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: Exception in main()
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 11:50:27.395671] Fatal: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: Exception in main()
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 12:05:17.966341] Fatal: 'DiscordAutoSender' object has no attribute 'card'
+Context: Traceback (most recent call last):
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 360, in main
+    app = DiscordAutoSender(root)
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 87, in __init__
+    self.build_gui()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 91, in build_gui
+    self.notebook = ttk.Notebook(self.card)
+                                 ^^^^^^^^^
+AttributeError: 'DiscordAutoSender' object has no attribute 'card'
+
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 12:05:41.282728] Fatal: 'DiscordAutoSender' object has no attribute 'card'
+Context: Traceback (most recent call last):
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 360, in main
+    app = DiscordAutoSender(root)
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 87, in __init__
+    self.build_gui()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 91, in build_gui
+    self.notebook = ttk.Notebook(self.card)
+                                 ^^^^^^^^^
+AttributeError: 'DiscordAutoSender' object has no attribute 'card'
+
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 12:05:53.313037] Fatal: 'DiscordAutoSender' object has no attribute 'card'
+Context: Traceback (most recent call last):
+  File "c:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 360, in main
+    app = DiscordAutoSender(root)
+  File "c:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 87, in __init__
+    self.build_gui()
+    ~~~~~~~~~~~~~~^^
+  File "c:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 91, in build_gui
+    self.notebook = ttk.Notebook(self.card)
+                                 ^^^^^^^^^
+AttributeError: 'DiscordAutoSender' object has no attribute 'card'
+
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-08 17:00:10.039252] StartupError: 'DiscordAutoSender' object has no attribute 'show_help'
+Context: main
+------------------------------------------------------------
+[2025-07-08 17:00:15.193662] StartupError: 'DiscordAutoSender' object has no attribute 'show_help'
+Context: main
+------------------------------------------------------------
+[2025-07-08 17:00:32.500646] StartupError: 'DiscordAutoSender' object has no attribute 'show_help'
+Context: main
+------------------------------------------------------------
+[2025-07-08 17:04:58.298202] StartupError: 'DiscordAutoSender' object has no attribute 'show_help'
+Context: main
+------------------------------------------------------------
+[2025-07-08 17:05:03.323104] StartupError: 'DiscordAutoSender' object has no attribute 'show_help'
+Context: main
+------------------------------------------------------------
+[2025-07-08 17:05:06.981521] StartupError: 'DiscordAutoSender' object has no attribute 'show_help'
+Context: main
+------------------------------------------------------------
+[2025-07-08 17:06:39.513153] StartupError: 'DiscordAutoSender' object has no attribute 'show_help'
+Context: main
+Resolution: Traceback (most recent call last):
+  File "c:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 633, in main
+    app = DiscordAutoSender(root)
+  File "c:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 99, in __init__
+    self.build_gui()
+    ~~~~~~~~~~~~~~^^
+  File "c:\Users\vaxit\Documents\Python\discord_auto_gui.py", line 135, in build_gui
+    help_icon = ctk.CTkButton(sidebar, text="❓", width=50, height=50, fg_color="#23272A", command=self.show_help)
+                                                                                                   ^^^^^^^^^^^^^^
+AttributeError: 'DiscordAutoSender' object has no attribute 'show_help'
+
+------------------------------------------------------------
+[2025-07-09T04:46:13.661112] StartupError: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: main() startup
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-09T04:48:26.080730] StartupError: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: main() startup
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-09T17:20:31.517965] StartupError: 'DiscordAutoSender' object has no attribute 'onboarding'
+Context: main() startup
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-09T17:21:51.096829] StartupError: 'DiscordAutoSender' object has no attribute 'onboarding'
+Context: main() startup
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-09T20:00:04.140437] StartupError: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: main() startup
+Resolution: Script crashed
+------------------------------------------------------------
+[2025-07-09T20:01:41.783955] StartupError: 'DiscordAutoSender' object has no attribute 'animate_shine'
+Context: main() startup
+Resolution: Script crashed
+------------------------------------------------------------

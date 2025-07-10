@@ -1,0 +1,15 @@
+{
+    "servers": {
+        "github": {
+            "type": "http",
+            "url": "https://api.githubcopilot.com/mcp/"
+        },
+        "everything": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-everything"
+            ]
+        }
+    }
+}

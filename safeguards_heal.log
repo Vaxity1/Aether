@@ -1,0 +1,4 @@
+2025-07-08 21:58:32,146 - safeguards_heal - WARNING - [safeguards_heal.py:56] - psutil not available - using simplified system monitoring
+2025-07-08 21:58:32,147 - safeguards_heal - WARNING - [safeguards_heal.py:64] - watchdog not available - using simplified file monitoring
+2025-07-08 21:58:44,525 - __main__ - WARNING - [safeguards_heal.py:56] - psutil not available - using simplified system monitoring
+2025-07-08 21:58:44,526 - __main__ - WARNING - [safeguards_heal.py:64] - watchdog not available - using simplified file monitoring

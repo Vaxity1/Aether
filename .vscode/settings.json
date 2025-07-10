@@ -1,0 +1,61 @@
+{
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "terminal.integrated.sendKeybindingsToShell": true,
+    "terminal.integrated.commandsToSkipShell": [
+        ""
+    ],
+    "files.autoSave": "afterDelay",
+
+    // Fix for memory overflow issues (e.g., GitHub Copilot, tsup, Node.js)
+    "typescript.tsserver.maxTsServerMemory": 8192,
+    "terminal.integrated.env.windows": {
+        "NODE_OPTIONS": "--max-old-space-size=8192"
+    },
+    "terminal.integrated.env.linux": {
+        "NODE_OPTIONS": "--max-old-space-size=8192"
+    },
+    "terminal.integrated.env.osx": {
+        "NODE_OPTIONS": "--max-old-space-size=8192"
+    },
+    "breadcrumbs.enabled": true,
+    "mcp": {
+        "servers": {
+            "github": {
+                "type": "http",
+                "url": "https://api.githubcopilot.com/mcp/"
+            },
+            "everything": {
+                "command": "docker",
+                "args": [
+                    "run",
+                    "-i",
+                    "--rm",
+                    "mcp/everything"
+                ]
+            }
+        }
+    },
+    "chat.mcp.serverSampling": {
+        "Global in Code: everything": {
+            "allowedModels": [
+                "github.copilot-chat/claude-sonnet-4"
+            ]
+        }
+    },
+    "files.associations": {
+        "*.ahk": "ahk2",
+        "*.py": "python",
+        "*.md": "markdown"
+    },
+    "AutoHotkey2.InterpreterPath": "C:\\Program Files\\Autohotkey\\v2\\AutoHotkey64.exe",
+    "git.autofetch": true,
+    "github.copilot.chat.codesearch.enabled": true,
+    "github.copilot.chat.agent.thinkingTool": true,
+
+    // Always add these .md files as context for Copilot Chat
+    "github.copilot.chat.contextFiles": [
+        "Loop_Version2.md",
+        "copilot-instructions.md",
+        "impscriptprompt.md"
+    ],
+}
