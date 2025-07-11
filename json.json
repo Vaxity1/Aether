@@ -1,0 +1,30 @@
+{
+  "error_patterns": {
+    "syntax_errors": {
+      "frequency": 0.15,
+      "common_causes": ["missing_semicolon", "indentation_error", "typo"],
+      "solutions": ["automated_linting", "syntax_highlighting", "code_review"],
+      "prevention": ["pre_commit_hooks", "ide_configuration"]
+    },
+    "logic_errors": {
+      "frequency": 0.25,
+      "common_causes": ["edge_case_handling", "async_issues", "state_management"],
+      "solutions": ["unit_testing", "debugging", "code_walkthrough"],
+      "prevention": ["tdd_approach", "peer_review", "design_patterns"]
+    }
+  },
+  "project_type": "discord_automation",
+  "complexity_level": "intermediate",
+  "tech_stack": ["python", "tkinter", "discord.py"],
+  "quality_requirements": {
+    "test_coverage": 0.8,
+    "performance_threshold": "100ms_response",
+    "error_tolerance": 0.01
+  },
+  "feature_priorities": [
+    "gui_responsiveness",
+    "error_handling",
+    "discord_integration",
+    "user_experience"
+  ]
+}

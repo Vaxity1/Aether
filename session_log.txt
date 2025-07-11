@@ -16,3 +16,54 @@
 ------------------------------------------------------------
 [2025-07-10T00:38:25.626038] Session closed by user.
 ------------------------------------------------------------
+[2025-07-10T01:42:06.971520] Session closed by user.
+------------------------------------------------------------
+[2025-07-10T01:42:10.110804] Session closed by user.
+------------------------------------------------------------
+[2025-07-10T01:42:11.097930] Session closed by user.
+------------------------------------------------------------
+[2025-07-10T01:42:11.575060] Session closed by user.
+------------------------------------------------------------
+[2025-07-10T01:42:15.250916] Session closed by user.
+------------------------------------------------------------
+[2025-07-10T01:42:15.258387] Session closed by user.
+------------------------------------------------------------
+[2025-07-10T01:42:23.245335] Session closed by user.
+------------------------------------------------------------
+[2025-07-10T01:53:11.250601] DiscordAutoSender started.
+------------------------------------------------------------
+[2025-07-10T01:54:15.414756] DiscordAutoSender started.
+------------------------------------------------------------
+[2025-07-10T04:09:03.751726] Application closed by user.
+------------------------------------------------------------
+[{}] ERROR_TYPE: AttributeError '_tkinter.tkapp' object has no attribute 'file_processor'
+- Location: main.py: BasicTkWindow.__init__
+- Issue: file_processor was referenced before initialization due to widget/menu creation order
+- Fix: Moved file_processor initialization before menu/buttons that reference it
+- Impact: Fatal error resolved, GUI now launches and operates as expected
+- Prevention: Always initialize all referenced attributes before creating callbacks/menus
+
+[{}] INFO: Fatal error resolved and application validated for runtime.
+- Location: main.py
+- Issue: None
+- Fix: None
+- Impact: Application is now stable and operational
+- Prevention: Maintain correct initialization order for all GUI components
+
+[{}] NEXT ACTION: Begin next prompt batch (NEXT!)
+- Location: main.py
+- Issue: None
+- Fix: None
+- Impact: Ready for next development phase
+- Prevention: N/A
+[2025-07-10T07:01:53.684716] QA Results: {"flake8_passed": false, "flake8_output": "C:\\Users\\vaxit\\Documents\\Python2\\my_codebase:0:1: E902 FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\vaxit\\\\Documents\\\\Python2\\\\my_codebase'\n", "mypy_passed": false, "mypy_output": "mypy: can't read file 'my_codebase': No such file or directory\n", "pytest_passed": false, "pytest_output": "\nno tests ran in 0.00s\nERROR: file or directory not found: C:\\Users\\vaxit\\Documents\\Python2\\my_codebase\n\n", "syntax_validation": false, "style_compliance": false, "type_checking": false, "unit_tests": false, "all_passed": false}
+[2025-07-10T07:22:30.561026] QA Results: {"syntax_validation": true, "style_compliance": true, "performance_profiling": true, "unit_tests": true, "integration_tests": true, "accessibility": true, "error_handling": true}
+[2025-07-10T12:45:35.880708] Test Event: {"foo": "bar"}
+[2025-07-10T13:20:04.107489] Test Event: {"foo": "bar"}
+[2025-07-10T13:20:04.176743] Test Event: {"foo": "bar"}
+[2025-07-10T17:49:41.009188] QA Results: {"syntax_validation": true, "style_compliance": true, "performance_profiling": true, "unit_tests": true, "integration_tests": true, "accessibility": true, "error_handling": true}
+[2025-07-10T17:50:06.135229] QA Results: {"syntax_validation": true, "style_compliance": true, "performance_profiling": true, "unit_tests": true, "integration_tests": true, "accessibility": true, "error_handling": true}
+[2025-07-10T18:31:45.165445] QA Results: {"syntax_validation": true, "style_compliance": true, "performance_profiling": true, "unit_tests": true, "integration_tests": true, "accessibility": true, "error_handling": true}
+[2025-07-10T19:45:39.102916] QA Results: {"syntax_validation": true, "style_compliance": true, "performance_profiling": true, "unit_tests": true, "integration_tests": true, "accessibility": true, "error_handling": true}
+[2025-07-10T21:22:35.326193] Test Event: {"foo": "bar"}
+[2025-07-10T21:35:03.176226] QA Results: {"flake8_passed": false, "flake8_output": "C:\\users\\vaxit\\documents\\python2\\my_codebase:0:1: E902 FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\users\\\\vaxit\\\\documents\\\\python2\\\\my_codebase'\n", "mypy_passed": false, "mypy_output": "mypy: can't read file 'my_codebase': No such file or directory\n", "pytest_passed": false, "pytest_output": "\nno tests ran in 0.00s\nERROR: file or directory not found: C:\\users\\vaxit\\documents\\python2\\my_codebase\n\n", "syntax_validation": false, "style_compliance": false, "type_checking": false, "unit_tests": false, "all_passed": false}

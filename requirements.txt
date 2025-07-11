@@ -1,0 +1,6 @@
+# VaxityAutoTyper requirements
+# Standard library modules (tkinter, threading) do not need to be installed
+pyautogui
+keyboard
+Pillow
+pre-commit

@@ -1,0 +1,14 @@
+{
+  "typing_speed": 0.01,
+  "random_delay": false,
+  "min_delay": 0.01,
+  "max_delay": 0.05,
+  "mistake_simulation": false,
+  "mistake_rate": 0.01,
+  "retry_attempts": 3,
+  "theme": "Discord",
+  "font": [
+    "Inter",
+    11
+  ]
+}

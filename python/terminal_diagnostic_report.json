@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-07-10 19:07:44",
+  "issues": {
+    "python_processes": [
+      {
+        "name": "python.exe",
+        "memory_percent": 0.010071865087187944,
+        "cmdline": [
+          "C:\\Users\\vaxit\\Documents\\Python2\\.venv\\Scripts\\python.exe",
+          "terminal_diagnostics.py"
+        ],
+        "cpu_percent": 0.0,
+        "pid": 26224
+      },
+      {
+        "name": "python.exe",
+        "memory_percent": 0.052963912137015595,
+        "cmdline": [
+          "C:\\Users\\vaxit\\Documents\\Python2\\.venv\\Scripts\\python.exe",
+          "terminal_diagnostics.py"
+        ],
+        "cpu_percent": 0.0,
+        "pid": 26412
+      }
+    ],
+    "venv_status": {
+      "venv_python": "C:\\Users\\vaxit\\Documents\\Python2\\.venv\\Scripts\\python.exe",
+      "is_venv": true,
+      "python_version": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+      "executable_exists": true,
+      "executable_accessible": true
+    },
+    "subprocess_issues": {
+      "issues": [
+        "Python executable not working properly"
+      ]
+    },
+    "path_issues": {
+      "issues": [],
+      "project_root": "C:\\Users\\vaxit\\Documents\\Python2\\python"
+    },
+    "timeout_issues": {
+      "files_without_timeout": [
+        "C:\\Users\\vaxit\\Documents\\Python2\\python\\autoformat.py",
+        "C:\\Users\\vaxit\\Documents\\Python2\\python\\autorefactor.py",
+        "C:\\Users\\vaxit\\Documents\\Python2\\python\\main\\main.py",
+        "C:\\Users\\vaxit\\Documents\\Python2\\python\\tools\\complexity_report.py",
+        "C:\\Users\\vaxit\\Documents\\Python2\\python\\tools\\coverage_enforce.py",
+        "C:\\Users\\vaxit\\Documents\\Python2\\python\\tools\\generate_docs.py"
+      ]
+    },
+    "recursion_issues": {
+      "issues": []
+    }
+  },
+  "fixes": {
+    "fixes_applied": [
+      "Cleaned up active processes",
+      "Fixed subprocess timeout issues",
+      "Fixed Python executable usage",
+      "Fixed recursion issues"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "logfile": "python_workflow.log",
+  "qa_codebase": "my_codebase",
+  "session_summary_file": "session_summary.log",
+  "session_log_file": "session_log.txt",
+  "default_context": {
+    "project_complexity": "intermediate",
+    "development_phase": "implementation",
+    "error_rate": 0.05,
+    "technical_debt": 0.2
+  }
+}

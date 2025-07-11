@@ -1,0 +1,4 @@
+[2025-07-10T05:27:57.617983] AppCrash: '_tkinter.tkapp' object has no attribute 'open_diagnostics_dialog'
+Context: main()
+Resolution: Check error log for details.
+------------------------------------------------------------

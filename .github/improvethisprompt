@@ -1,0 +1,33 @@
+# Prompt Improvement Formats
+
+## By Style/Tone
+- `improve this prompt-concise: "..."`
+- `improve this prompt-formal: "..."`
+- `improve this prompt-conversational: "..."`
+- `improve this prompt-technical: "..."`
+- `improve this prompt-academic: "..."`
+
+## By Structure
+- `improve this prompt-step-by-step: "..."`
+- `improve this prompt-with-examples: "..."`
+- `improve this prompt-bullet-format: "..."`
+- `improve this prompt-structured: "..."`
+
+## By Purpose
+- `improve this prompt-clarity: "..."`
+- `improve this prompt-specificity: "..."`
+- `improve this prompt-completeness: "..."`
+- `improve this prompt-effectiveness: "..."`
+
+## By Output Control
+- `improve this prompt-detailed-output: "..."`
+- `improve this prompt-brief-output: "..."`
+- `improve this prompt-format-controlled: "..."`
+
+## Combination Formats
+- `improve this prompt-concise+examples: "..."`
+- `improve this prompt-formal+structured: "..."`
+- `improve this prompt-technical+step-by-step: "..."`
+
+## Key Insight
+The most universally effective improvements tend to be **"concise"** (removes fluff, sharpens focus), **"specific"** (adds concrete details), and **"structured"** (organizes for clarity). These work well alone or combined with other modifiers based on your specific needs.

@@ -10,13 +10,13 @@ import sys
 import time
 import json
 import random
+import threading
 import tkinter as tk
 from tkinter import simpledialog, font
 from tkinter import messagebox, filedialog, scrolledtext  # type: ignore
 from typing import Any, Dict, Optional, Tuple
 from datetime import datetime
 import tkinter.ttk as ttk  # for tabbed preview
-import chardet  # type: ignore
 
 # --- Error Logging ---
 ERROR_LOG = "error_log.txt"
@@ -32,60 +32,6 @@ def log_session(summary: str) -> None:
     with open(SESSION_LOG, "a", encoding="utf-8") as f:
         timestamp = datetime.now().isoformat()
         f.write(f"[{timestamp}] {summary}\n" + "-"*60 + "\n")
-
-# --- Session Summary Logging Logic ---
-def write_session_summary(context, accomplishments, metrics, learning):
-    """
-    Writes a full session summary to session_summary.log in the required format.
-    Args:
-        context (dict): Project context (phase, complexity, technical debt, etc.)
-        accomplishments (dict): Session accomplishments (features, errors, refactoring, etc.)
-        metrics (dict): Performance and quality metrics
-        learning (dict): Learning outcomes and next session prep
-    """
-    timestamp = datetime.now().isoformat()
-    summary = f"""## Session Summary - {timestamp}
-
-### Context Analysis
-- Project Phase: {context.get('development_phase', 'N/A')}
-- Complexity Level: {context.get('complexity_level', 'N/A')}
-- Error Rate: {metrics.get('error_rate', 'N/A')}
-- Technical Debt: {context.get('technical_debt', 'N/A')}
-
-### Adaptive Decisions
-- Feature Count: {accomplishments.get('feature_count', 'N/A')}
-- Priority Focus: {accomplishments.get('priority_focus', 'N/A')}
-- Quality Gates: {accomplishments.get('quality_gates', 'N/A')}
-
-### Accomplishments
-- Errors Resolved: {accomplishments.get('errors_resolved', 'N/A')}
-- Features Implemented: {accomplishments.get('features_implemented', 'N/A')}
-- Refactoring Completed: {accomplishments.get('refactoring_completed', 'N/A')}
-- Tests Added: {accomplishments.get('tests_added', 'N/A')}
-- Advanced Automation: {accomplishments.get('advanced_automation', 'N/A')}
-- Analytics/Diagnostics: {accomplishments.get('analytics_diagnostics', 'N/A')}
-
-### Learning Outcomes
-- New Error Patterns: {learning.get('new_error_patterns', 'N/A')}
-- Performance Improvements: {learning.get('performance_improvements', 'N/A')}
-- Code Quality Enhancements: {learning.get('code_quality_enhancements', 'N/A')}
-- User Experience Gains: {learning.get('user_experience_gains', 'N/A')}
-
-### Next Session Preparation
-- Priority Tasks: {learning.get('priority_tasks', 'N/A')}
-- Technical Debt Items: {learning.get('technical_debt_items', 'N/A')}
-- Performance Targets: {learning.get('performance_targets', 'N/A')}
-- Learning Focus: {learning.get('learning_focus', 'N/A')}
-
-### Metrics
-- Session Duration: {metrics.get('session_duration', 'N/A')}
-- Feature Velocity: {metrics.get('feature_velocity', 'N/A')}
-- Error Resolution Rate: {metrics.get('error_resolution_rate', 'N/A')}
-- Code Quality Score: {metrics.get('code_quality_score', 'N/A')}
-- User Satisfaction: {metrics.get('user_satisfaction', 'N/A')}
-"""
-    with open("session_summary.log", "a", encoding="utf-8") as f:
-        f.write(summary + "\n\n")
 
 # --- Enhanced Discord Rate Limiting System ---
 class DiscordRateLimiter:
@@ -164,6 +110,17 @@ THEMES = {
 }
 DEFAULT_FONT = ("Segoe UI", 11)
 
+# --- LANCZOS fallback: define only once at the top, not in nested scopes ---
+try:
+    from PIL import Image, ImageTk  # type: ignore
+    LANCZOS = getattr(Image, 'LANCZOS', None)
+    if LANCZOS is None:
+        LANCZOS = getattr(Image, 'BICUBIC', 3)  # 3 is BICUBIC's int value in Pillow
+except ImportError:
+    Image = None  # type: ignore
+    ImageTk = None  # type: ignore
+    LANCZOS = 3  # type: ignore
+
 # --- Modern Icon Loader (fixed for Pillow compatibility) ---
 def load_icon(path: str, size: Tuple[int, int] = (24, 24)) -> Optional[Any]:
     if Image and ImageTk and os.path.exists(path):
@@ -189,13 +146,13 @@ class ToolTip:
         try:
             bbox = self.widget.bbox("insert")  # type: ignore
             if bbox is None:
-                x, y = 0, 0
+                x, y, cx, cy = 0, 0, 0, 0
             else:
-                x, y = bbox[:2]
+                x, y, cx, cy = bbox
         except Exception:
-            x, y = 0, 0
+            x, y, cx, cy = 0, 0, 0, 0
         x = int(x) + self.widget.winfo_rootx() + 25
-        y = int(y) + self.widget.winfo_rooty() + 25
+        y = int(y) + int(cy) + self.widget.winfo_rooty() + 25
         self.tipwindow = tw = tk.Toplevel(self.widget)
         tw.wm_overrideredirect(True)
         tw.wm_geometry(f"+{x}+{y}")
@@ -208,6 +165,61 @@ class ToolTip:
         self.tipwindow = None
         if tw:
             tw.destroy()
+
+# --- Session Summary Logging ---
+def write_session_summary(context: Dict[str, Any], accomplishments: Dict[str, Any], 
+                          metrics: Dict[str, Any], learning: Dict[str, Any]) -> None:
+    """
+    Writes a full session summary to session_summary.log in the required format.
+    Args:
+        context (dict): Project context (phase, complexity, technical debt, etc.)
+        accomplishments (dict): Session accomplishments (features, errors, refactoring, etc.)
+        metrics (dict): Performance and quality metrics
+        learning (dict): Learning outcomes and next session prep
+    """
+    timestamp = datetime.now().isoformat()
+    summary = f"""## Session Summary - {timestamp}
+
+### Context Analysis
+- Project Phase: {context.get('development_phase', 'N/A')}
+- Complexity Level: {context.get('complexity_level', 'N/A')}
+- Error Rate: {metrics.get('error_rate', 'N/A')}
+- Technical Debt: {context.get('technical_debt', 'N/A')}
+
+### Adaptive Decisions
+- Feature Count: {accomplishments.get('feature_count', 'N/A')}
+- Priority Focus: {accomplishments.get('priority_focus', 'N/A')}
+- Quality Gates: {accomplishments.get('quality_gates', 'N/A')}
+
+### Accomplishments
+- Errors Resolved: {accomplishments.get('errors_resolved', 'N/A')}
+- Features Implemented: {accomplishments.get('features_implemented', 'N/A')}
+- Refactoring Completed: {accomplishments.get('refactoring_completed', 'N/A')}
+- Tests Added: {accomplishments.get('tests_added', 'N/A')}
+- Advanced Automation: {accomplishments.get('advanced_automation', 'N/A')}
+- Analytics/Diagnostics: {accomplishments.get('analytics_diagnostics', 'N/A')}
+
+### Learning Outcomes
+- New Error Patterns: {learning.get('new_error_patterns', 'N/A')}
+- Performance Improvements: {learning.get('performance_improvements', 'N/A')}
+- Code Quality Enhancements: {learning.get('code_quality_enhancements', 'N/A')}
+- User Experience Gains: {learning.get('user_experience_gains', 'N/A')}
+
+### Next Session Preparation
+- Priority Tasks: {learning.get('priority_tasks', 'N/A')}
+- Technical Debt Items: {learning.get('technical_debt_items', 'N/A')}
+- Performance Targets: {learning.get('performance_targets', 'N/A')}
+- Learning Focus: {learning.get('learning_focus', 'N/A')}
+
+### Metrics
+- Session Duration: {metrics.get('session_duration', 'N/A')}
+- Feature Velocity: {metrics.get('feature_velocity', 'N/A')}
+- Error Resolution Rate: {metrics.get('error_resolution_rate', 'N/A')}
+- Code Quality Score: {metrics.get('code_quality_score', 'N/A')}
+- User Satisfaction: {metrics.get('user_satisfaction', 'N/A')}
+"""
+    with open("session_summary.log", "a", encoding="utf-8") as f:
+        f.write(summary + "\n\n")
 
 # --- Feature 1: Advanced Message Validation and Preview System ---
 class MessageValidator:
@@ -347,38 +359,28 @@ class MessagePreviewSystem:
     def _apply_discord_formatting(self, message: str) -> str:
         return message
 
-# --- Utility: Robust File Reading with Encoding Detection (Phase 2, Prompt 51) ---
+# --- File Handling & Text Processing Utilities (implemented) ---
 def detect_file_encoding(filepath: str) -> str:
-    """Detect file encoding using chardet."""
-    with open(filepath, 'rb') as f:
-        raw = f.read(4096)
-    result = chardet.detect(raw)
-    encoding = result['encoding']
-    if encoding is None:
-        return 'utf-8'  # fallback
-    return encoding
+    try:
+        import chardet  # type: ignore
+        with open(filepath, 'rb') as f:
+            raw = f.read(4096)
+            result = chardet.detect(raw)
+            return result['encoding'] or 'utf-8'
+    except Exception as e:
+        log_error('EncodingDetectionError', str(e), f'detect_file_encoding({filepath})')
+        return 'utf-8'
 
 def read_text_file(filepath: str) -> str:
-    """Read text file with robust encoding detection (UTF-8, ASCII, Windows-1252)."""
+    encoding = detect_file_encoding(filepath)
     try:
-        encoding = detect_file_encoding(filepath)
-        if encoding.lower() in ['utf-8', 'ascii', 'windows-1252']:
-            with open(filepath, 'r', encoding=encoding, errors='replace') as f:
-                return f.read()
-        # fallback: try utf-8, then windows-1252
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                return f.read()
-        except Exception:
-            with open(filepath, 'r', encoding='windows-1252', errors='replace') as f:
-                return f.read()
+        with open(filepath, 'r', encoding=encoding, errors='replace') as f:
+            return f.read()
     except Exception as e:
         log_error('FileReadError', str(e), f'read_text_file({filepath})')
-        raise
+        return ''
 
-# --- Utility: Remove Duplicates (Phase 2, Prompt 55) ---
 def remove_duplicates(lines: list[str]) -> list[str]:
-    """Remove duplicate lines, preserving order."""
     seen: set[str] = set()
     result: list[str] = []
     for line in lines:
@@ -387,10 +389,95 @@ def remove_duplicates(lines: list[str]) -> list[str]:
             result.append(line)
     return result
 
-# --- Utility: Error Dialog (for error handling in GUI) ---
 def show_error_dialog(title: str, message: str):
-    import tkinter.messagebox as messagebox
-    messagebox.showerror(str(title), str(message))  # type: ignore
+    try:
+        messagebox.showerror(title, message)  # type: ignore
+    except Exception as e:
+        log_error('ErrorDialogError', str(e), f'show_error_dialog({title})')
+
+# --- GUI Enhancements for File/Text Processing (implemented) ---
+class FileTextProcessor:
+    def __init__(self, parent: tk.Tk, text_widget: tk.Text, status_bar: tk.Label):
+        self.parent = parent
+        self.text_widget = text_widget
+        self.status_bar = status_bar
+        self.current_content = ''
+        self.current_file = ''
+
+    def load_file(self, filepath: str):
+        content = read_text_file(filepath)
+        self.current_content = content
+        self.current_file = filepath
+        self.display_content(content)
+        self.update_status(f"Loaded: {os.path.basename(filepath)}")
+
+    def display_content(self, content: str):
+        self.text_widget.config(state=tk.NORMAL)
+        self.text_widget.delete(1.0, tk.END)
+        self.text_widget.insert(tk.END, content)
+        self.text_widget.config(state=tk.NORMAL)
+
+    def update_status(self, msg: str):
+        self.status_bar.config(text=msg)
+
+    def trim_whitespace(self):
+        content = self.text_widget.get(1.0, tk.END)
+        lines = trim_whitespace(split_lines(content))
+        self.display_content('\n'.join(lines))
+        self.update_status("Whitespace trimmed.")
+
+    def remove_empty(self):
+        content = self.text_widget.get(1.0, tk.END)
+        lines = remove_empty_lines(split_lines(content))
+        self.display_content('\n'.join(lines))
+        self.update_status("Empty lines removed.")
+
+    def remove_duplicates(self):
+        content = self.text_widget.get(1.0, tk.END)
+        lines = remove_duplicates(split_lines(content))
+        self.display_content('\n'.join(lines))
+        self.update_status("Duplicates removed.")
+
+    def show_stats(self):
+        content = self.text_widget.get(1.0, tk.END)
+        stats = get_text_stats(content)
+        msg = '\n'.join(f"{k}: {v}" for k, v in stats.items())
+        messagebox.showinfo("Text Stats", msg)
+
+# --- Discord Automation Implementation ---
+def detect_discord_window() -> bool:
+    try:
+        import pygetwindow as gw  # type: ignore
+        windows = gw.getWindowsWithTitle("Discord")
+        return bool(windows)
+    except Exception as e:
+        log_error('DiscordWindowDetectError', str(e), 'detect_discord_window')
+        return False
+
+def focus_discord_window() -> bool:
+    try:
+        import pygetwindow as gw  # type: ignore
+        windows = gw.getWindowsWithTitle("Discord")
+        if windows:
+            windows[0].activate()
+            return True
+        return False
+    except Exception as e:
+        log_error('DiscordWindowFocusError', str(e), 'focus_discord_window')
+        return False
+
+def send_message_to_discord(message: str) -> bool:
+    try:
+        import keyboard  # type: ignore
+        if not focus_discord_window():
+            return False
+        time.sleep(0.5)
+        keyboard.write(message)
+        keyboard.press_and_release('enter')
+        return True
+    except Exception as e:
+        log_error('DiscordSendError', str(e), 'send_message_to_discord')
+        return False
 
 # --- Persistent Settings/Config System ---
 SETTINGS_FILE = "settings.json"
@@ -687,446 +774,227 @@ def run_heal_diagnostics(script_path: str = __file__) -> Dict[str, Any]:
     log_analytics('heal_diagnostics_run', results)
     return results
 
-# --- Patch: Remove LANCZOS assignment block completely (fix constant redefinition error) ---
-
-# --- File/Text Processing Utilities ---
-def split_lines(text: str) -> list[str]:
-    """Split text into lines, handling all common line endings."""
-    return text.replace('\r\n', '\n').replace('\r', '\n').split('\n')
-
-def remove_empty_lines(lines: list[str]) -> list[str]:
-    """Remove empty or whitespace-only lines."""
-    return [line for line in lines if line.strip()]
-
-def trim_whitespace(lines: list[str]) -> list[str]:
-    """Trim leading and trailing whitespace from each line."""
-    return [line.strip() for line in lines]
-
-def get_text_stats(text: str) -> dict[str, Any]:
-    lines = split_lines(text)
-    nonempty = remove_empty_lines(lines)
-    chars = len(text)
-    words = len(text.split())
-    return {
-        'lines': len(lines),
-        'nonempty_lines': len(nonempty),
-        'characters': chars,
-        'words': words,
-        'avg_line_length': chars // len(lines) if lines else 0,
-        'avg_word_length': (sum(len(w) for w in text.split()) // words) if words else 0
-    }
-
-# --- FileTextProcessor Implementation ---
-class FileTextProcessor:
-    def __init__(self, parent: tk.Tk, text_widget: tk.Text, status_bar: tk.Label):
-        self.parent = parent
-        self.text_widget = text_widget
-        self.status_bar = status_bar
-        self.current_content = ''
-        self.current_file = ''
-
-    def load_file(self, filepath: str):
-        try:
-            content = read_text_file(filepath)
-            self.current_content = content
-            self.current_file = filepath
-            self.display_content(content)
-            self.update_status(f"Loaded: {os.path.basename(filepath)}")
-        except Exception as e:
-            log_error('FileLoadError', str(e), f'load_file({filepath})')
-            show_error_dialog('File Load Error', f'Could not load file: {filepath}\n{e}')
-
-    def display_content(self, content: str):
-        self.text_widget.config(state=tk.NORMAL)
-        self.text_widget.delete(1.0, tk.END)
-        self.text_widget.insert(tk.END, content)
-        self.text_widget.config(state=tk.NORMAL)
-
-    def update_status(self, msg: str):
-        self.status_bar.config(text=msg)
-
-    def trim_whitespace(self):
-        try:
-            content = self.text_widget.get(1.0, tk.END)
-            lines = trim_whitespace(split_lines(content))
-            self.display_content('\n'.join(lines))
-            self.update_status("Whitespace trimmed.")
-        except Exception as e:
-            log_error('TrimWhitespaceError', str(e), 'FileTextProcessor.trim_whitespace')
-            show_error_dialog('Trim Whitespace Error', str(e))
-
-    def remove_empty(self):
-        try:
-            content = self.text_widget.get(1.0, tk.END)
-            lines = remove_empty_lines(split_lines(content))
-            self.display_content('\n'.join(lines))
-            self.update_status("Empty lines removed.")
-        except Exception as e:
-            log_error('RemoveEmptyLinesError', str(e), 'FileTextProcessor.remove_empty')
-            show_error_dialog('Remove Empty Lines Error', str(e))
-
-    def remove_duplicates(self):
-        try:
-            content = self.text_widget.get(1.0, tk.END)
-            lines = remove_duplicates(split_lines(content))
-            self.display_content('\n'.join(lines))
-            self.update_status("Duplicates removed.")
-        except Exception as e:
-            log_error('RemoveDuplicatesError', str(e), 'FileTextProcessor.remove_duplicates')
-            show_error_dialog('Remove Duplicates Error', str(e))
-
-    def show_stats(self):
-        try:
-            content = self.text_widget.get(1.0, tk.END)
-            stats = get_text_stats(content)
-            msg = '\n'.join(f"{k}: {v}" for k, v in stats.items())
-            messagebox.showinfo("Text Stats", msg)
-        except Exception as e:
-            log_error('ShowStatsError', str(e), 'FileTextProcessor.show_stats')
-            show_error_dialog('Show Stats Error', str(e))
-
-# --- Patch: Remove focus_discord_window and detect_discord_window stubs (now inlined) ---
-
-# --- Main Entrypoint (must be after all class/function definitions) ---
-if __name__ == "__main__":
-    app = BasicTkWindow()
-    app.mainloop()
-
-# --- Patch: Ensure Image and ImageTk are imported from PIL ---
-try:
-    from PIL import Image, ImageTk  # type: ignore
-except ImportError:
-    Image = None  # type: ignore
-    ImageTk = None  # type: ignore
-
-# --- Patch: Remove unused variables cx, cy in bbox unpacking ---
-# Replace all instances like:
-# x, y, cx, cy = ...
-# with:
-# x, y = ...[:2]
-# (or use only x, y if only those are needed)
-# --- End of patch ---
-
-# --- Type Hints and Forward Declarations for Linting ---
-from typing import TYPE_CHECKING, Any
-if TYPE_CHECKING:
-    import tkinter as tk
-    class FileTextProcessor:
-        def __init__(self, parent: 'tk.Tk', text_widget: 'tk.Text', status_bar: 'tk.Label'): ...
-        def load_file(self, filepath: str): ...
-        def trim_whitespace(self): ...
-        def remove_empty(self): ...
-        def remove_duplicates(self): ...
-        def show_stats(self): ...
-
-# --- End of type hint patch ---
-import tkinter as tk
-from tkinter import ttk, messagebox, filedialog, simpledialog, font, scrolledtext
-import threading
-import os
-import json
-import time
-import re
-try:
-    import pygetwindow as gw
-except ImportError:
-    gw = None
-
+# --- BasicTkWindow (UI/UX enhancements) ---
 class BasicTkWindow(tk.Tk):
-    """Main GUI window for VaxityAutoTyper Discord automation tool"""
     def __init__(self):
         super().__init__()
-        self.title("VaxityAutoTyper v0.01 - Discord AutoTyper")
-        self.geometry("900x700")
-        self.minsize(800, 600)
-        self.current_file_path = None
-        self.text_content = ""
-        self.typing_active = False
-        self.typing_thread = None
-        self.speed_var = tk.IntVar(value=50)
-        self.typing_delay = 0.1
-        self.text_processor = FileTextProcessor(self, None, None)  # Will set widgets after creation
-        self.create_widgets()
-        self.create_menu()
+        self.title("VaxityAutoTyper v0.01")
+        self.geometry("800x600")
+        self.resizable(True, True)
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.settings = load_settings()
+        self.apply_theme(self.settings.get("theme", "Discord"))
+        # Create text area and status bar first so file_processor can reference them
         self.create_status_bar()
-        self.center_window()
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.create_text_area()
+        # Initialize file_processor before any menu/buttons that use it
+        self.file_processor = FileTextProcessor(self, self.text_area, self.status_bar)
+        self.message_preview = MessagePreviewSystem(self)
+        self.icon = load_icon("icon.png")
+        if self.icon:
+            self.iconphoto(False, self.icon)  # type: ignore
+        # Now create menu and buttons that reference file_processor
+        self.create_menu_bar()
+        self.create_processing_buttons()
+        self.create_discord_buttons()
 
-    def create_widgets(self):
-        main_frame = ttk.Frame(self)
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-        left_panel = ttk.LabelFrame(main_frame, text="Controls", padding="10")
-        left_panel.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 5))
-        ttk.Label(left_panel, text="File Selection:").pack(anchor=tk.W)
-        file_frame = ttk.Frame(left_panel)
-        file_frame.pack(fill=tk.X, pady=(0, 10))
-        self.file_path_var = tk.StringVar()
-        ttk.Entry(file_frame, textvariable=self.file_path_var, state="readonly").pack(side=tk.LEFT, fill=tk.X, expand=True)
-        ttk.Button(file_frame, text="Browse", command=self.browse_file).pack(side=tk.RIGHT, padx=(5, 0))
-        ttk.Label(left_panel, text="Typing Speed:").pack(anchor=tk.W, pady=(10, 0))
-        speed_frame = ttk.Frame(left_panel)
-        speed_frame.pack(fill=tk.X, pady=(0, 10))
-        ttk.Scale(speed_frame, from_=10, to=200, variable=self.speed_var, orient=tk.HORIZONTAL).pack(fill=tk.X)
-        ttk.Label(speed_frame, text="10 WPM").pack(side=tk.LEFT)
-        ttk.Label(speed_frame, text="200 WPM").pack(side=tk.RIGHT)
-        button_frame = ttk.Frame(left_panel)
-        button_frame.pack(fill=tk.X, pady=10)
-        self.start_button = ttk.Button(button_frame, text="Start Typing", command=self.start_typing)
-        self.start_button.pack(fill=tk.X, pady=2)
-        self.stop_button = ttk.Button(button_frame, text="Stop Typing", command=self.stop_typing, state=tk.DISABLED)
-        self.stop_button.pack(fill=tk.X, pady=2)
-        self.pause_button = ttk.Button(button_frame, text="Pause", command=self.pause_typing, state=tk.DISABLED)
-        self.pause_button.pack(fill=tk.X, pady=2)
-        ttk.Separator(left_panel, orient=tk.HORIZONTAL).pack(fill=tk.X, pady=10)
-        ttk.Label(left_panel, text="Discord Controls:").pack(anchor=tk.W)
-        discord_frame = ttk.Frame(left_panel)
-        discord_frame.pack(fill=tk.X, pady=5)
-        ttk.Button(discord_frame, text="Focus Discord", command=self.focus_discord).pack(fill=tk.X, pady=2)
-        ttk.Button(discord_frame, text="Detect Discord", command=self.detect_discord).pack(fill=tk.X, pady=2)
-        ttk.Separator(left_panel, orient=tk.HORIZONTAL).pack(fill=tk.X, pady=10)
-        ttk.Label(left_panel, text="Diagnostics:").pack(anchor=tk.W)
-        diag_frame = ttk.Frame(left_panel)
-        diag_frame.pack(fill=tk.X, pady=5)
-        ttk.Button(diag_frame, text="Run Heal Diagnostics", command=self.run_heal_diagnostics).pack(fill=tk.X, pady=2)
-        ttk.Button(diag_frame, text="Show Text Stats", command=self.show_text_stats).pack(fill=tk.X, pady=2)
-        right_panel = ttk.LabelFrame(main_frame, text="Text Preview", padding="10")
-        right_panel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        text_frame = ttk.Frame(right_panel)
-        text_frame.pack(fill=tk.BOTH, expand=True)
-        self.text_display = tk.Text(text_frame, wrap=tk.WORD, font=("Consolas", 10))
-        scrollbar = ttk.Scrollbar(text_frame, orient=tk.VERTICAL, command=self.text_display.yview)
-        self.text_display.configure(yscrollcommand=scrollbar.set)
-        self.text_display.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.progress_var = tk.DoubleVar()
-        self.progress_bar = ttk.Progressbar(right_panel, variable=self.progress_var, maximum=100)
-        self.progress_bar.pack(fill=tk.X, pady=(10, 0))
-        # Set widgets for FileTextProcessor
-        self.text_processor.text_widget = self.text_display
-        self.text_processor.status_bar = None  # Not used directly
+    def on_close(self):
+        if messagebox.askokcancel("Quit", "Do you want to exit?"):  # type: ignore
+            self.destroy()
 
-    def create_menu(self):
+    def create_menu_bar(self):
         menubar = tk.Menu(self)
-        self.config(menu=menubar)
         file_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="File", menu=file_menu)
-        file_menu.add_command(label="Open File", command=self.browse_file)
-        file_menu.add_command(label="Reload File", command=self.reload_file)
+        file_menu.add_command(label="Open", command=self.open_file_dialog)
+        file_menu.add_command(label="Save Settings", command=lambda: save_settings(self.settings))
+        file_menu.add_command(label="Backup Settings", command=self.backup_settings_dialog)
+        file_menu.add_command(label="Restore Settings", command=self.restore_settings_dialog)
         file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=self.on_closing)
+        file_menu.add_command(label="Export Session Log", command=self.export_session_dialog)
+        file_menu.add_command(label="Import Session Log", command=self.import_session_dialog)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self.on_close)
+        menubar.add_cascade(label="File", menu=file_menu)
         edit_menu = tk.Menu(menubar, tearoff=0)
+        edit_menu.add_command(label="Trim Whitespace", command=self.file_processor.trim_whitespace)
+        edit_menu.add_command(label="Remove Empty Lines", command=self.file_processor.remove_empty)
+        edit_menu.add_command(label="Remove Duplicates", command=self.file_processor.remove_duplicates)
+        edit_menu.add_command(label="Show Stats", command=self.file_processor.show_stats)
         menubar.add_cascade(label="Edit", menu=edit_menu)
-        edit_menu.add_command(label="Clear Text", command=self.clear_text)
-        edit_menu.add_command(label="Process Text", command=self.process_text)
-        tools_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Tools", menu=tools_menu)
-        tools_menu.add_command(label="Focus Discord", command=self.focus_discord)
-        tools_menu.add_command(label="Run Diagnostics", command=self.run_heal_diagnostics)
-        tools_menu.add_command(label="Settings", command=self.show_settings)
         help_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Help", menu=help_menu)
         help_menu.add_command(label="About", command=self.show_about)
+        help_menu.add_command(label="Help", command=self.show_help)
+        help_menu.add_command(label="Run Heal Diagnostics", command=self.run_heal_diagnostics_dialog)
+        menubar.add_cascade(label="Help", menu=help_menu)
+        settings_menu = tk.Menu(menubar, tearoff=0)
+        settings_menu.add_command(label="Settings", command=self.open_settings_dialog)
+        settings_menu.add_command(label="Select Font", command=self.select_font)
+        settings_menu.add_command(label="Theme", command=lambda: self.apply_theme(self.settings.get("theme", "Discord")))
+        menubar.add_cascade(label="Settings", menu=settings_menu)
+        self.config(menu=menubar)
+
+    def open_settings_dialog(self):
+        SettingsDialog(self, self.settings, self.save_settings_from_dialog)
+
+    def save_settings_from_dialog(self, new_settings: Dict[str, Any]) -> None:
+        self.settings = new_settings
+        save_settings(self.settings)
+        self.apply_theme(self.settings.get("theme", "Discord"))
+        self.update_status_bar("Settings saved.")
+
+    def backup_settings_dialog(self):
+        if backup_settings():
+            self.update_status_bar("Settings backed up.")
+        else:
+            self.update_status_bar("Backup failed.")
+
+    def restore_settings_dialog(self):
+        if restore_settings():
+            self.settings = load_settings()
+            self.apply_theme(self.settings.get("theme", "Discord"))
+            self.update_status_bar("Settings restored.")
+        else:
+            self.update_status_bar("Restore failed.")
+
+    def export_session_dialog(self):
+        if export_session_log():
+            self.update_status_bar("Session log exported.")
+        else:
+            self.update_status_bar("Export failed.")
+
+    def import_session_dialog(self):
+        if import_session_log():
+            self.update_status_bar("Session log imported.")
+        else:
+            self.update_status_bar("Import failed.")
 
     def create_status_bar(self):
-        self.status_var = tk.StringVar()
-        self.status_var.set("Ready")
-        status_frame = ttk.Frame(self)
-        status_frame.pack(side=tk.BOTTOM, fill=tk.X)
-        ttk.Label(status_frame, textvariable=self.status_var, relief=tk.SUNKEN, anchor=tk.W).pack(side=tk.LEFT, fill=tk.X, expand=True)
-        self.discord_status_var = tk.StringVar()
-        self.discord_status_var.set("Discord: Not Connected")
-        ttk.Label(status_frame, textvariable=self.discord_status_var, relief=tk.SUNKEN).pack(side=tk.RIGHT, padx=(5, 0))
+        self.status_bar = tk.Label(self, text="Ready", anchor='w', bg=THEMES[self.settings.get("theme", "Discord")]["status"], fg=THEMES[self.settings.get("theme", "Discord")]["fg"])
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
-    def center_window(self):
-        self.update_idletasks()
-        width = self.winfo_width()
-        height = self.winfo_height()
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry(f"{width}x{height}+{x}+{y}")
+    def create_text_area(self):
+        self.text_area = scrolledtext.ScrolledText(self, wrap=tk.WORD, font=self.settings.get("font", DEFAULT_FONT))
+        self.text_area.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-    def browse_file(self):
-        file_path = filedialog.askopenfilename(
-            title="Select Text File",
-            filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
-        )
-        if file_path:
-            self.current_file_path = file_path
-            self.file_path_var.set(file_path)
-            self.load_file_content()
+    def create_processing_buttons(self):
+        frame = tk.Frame(self)
+        frame.pack(fill=tk.X, padx=5, pady=2)
+        tk.Button(frame, text="Preview Message", command=self.preview_message).pack(side=tk.LEFT)
+        tk.Button(frame, text="Trim Whitespace", command=self.file_processor.trim_whitespace).pack(side=tk.LEFT)
+        tk.Button(frame, text="Remove Empty", command=self.file_processor.remove_empty).pack(side=tk.LEFT)
+        tk.Button(frame, text="Remove Duplicates", command=self.file_processor.remove_duplicates).pack(side=tk.LEFT)
+        tk.Button(frame, text="Show Stats", command=self.file_processor.show_stats).pack(side=tk.LEFT)
 
-    def load_file_content(self):
-        if not self.current_file_path:
-            messagebox.showwarning("No File", "No file selected.")
-            return
-        try:
-            self.text_processor.load_file(self.current_file_path)
-            self.text_content = self.text_processor.current_content
-            self.status_var.set(f"Loaded: {os.path.basename(self.current_file_path)}")
-        except Exception as e:
-            messagebox.showerror("File Load Error", str(e))
+    def create_discord_buttons(self):
+        frame = tk.Frame(self)
+        frame.pack(fill=tk.X, padx=5, pady=2)
+        tk.Button(frame, text="Detect Discord", command=self.detect_discord).pack(side=tk.LEFT)
+        tk.Button(frame, text="Focus Discord", command=self.focus_discord).pack(side=tk.LEFT)
+        tk.Button(frame, text="Send Message", command=self.send_message).pack(side=tk.LEFT)
 
-    def reload_file(self):
-        if self.current_file_path:
-            self.load_file_content()
-        else:
-            messagebox.showwarning("No File", "No file to reload.")
+    def open_file_dialog(self):
+        filepath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
+        if filepath:
+            self.file_processor.load_file(filepath)
 
-    def clear_text(self):
-        self.text_display.delete(1.0, tk.END)
-        self.text_content = ""
-        self.status_var.set("Text cleared")
+    def display_file_content(self, content: str):
+        self.text_area.config(state=tk.NORMAL)
+        self.text_area.delete(1.0, tk.END)
+        self.text_area.insert(tk.END, content)
+        self.text_area.config(state=tk.NORMAL)
 
-    def process_text(self):
-        if not self.text_content:
-            messagebox.showwarning("No Text", "No text to process.")
-            return
-        processed = self.text_content
-        processed = '\n'.join(trim_whitespace(split_lines(processed)))
-        processed = '\n'.join(remove_empty_lines(split_lines(processed)))
-        processed = '\n'.join(remove_duplicates(split_lines(processed)))
-        self.text_display.delete(1.0, tk.END)
-        self.text_display.insert(1.0, processed)
-        self.text_content = processed
-        self.status_var.set("Text processed")
-
-    def start_typing(self):
-        if not self.text_content:
-            messagebox.showwarning("No Text", "No text to type.")
-            return
-        if not self.focus_discord():
-            messagebox.showerror("Discord Not Found", "Could not focus Discord window.")
-            return
-        self.typing_active = True
-        self.start_button.config(state=tk.DISABLED)
-        self.stop_button.config(state=tk.NORMAL)
-        self.pause_button.config(state=tk.NORMAL)
-        self.typing_thread = threading.Thread(target=self.typing_worker)
-        self.typing_thread.daemon = True
-        self.typing_thread.start()
-        self.status_var.set("Typing started...")
-
-    def typing_worker(self):
-        try:
-            import keyboard
-            lines = split_lines(self.text_content)
-            total = len(lines)
-            for idx, line in enumerate(lines):
-                if not self.typing_active:
-                    break
-                for char in line:
-                    if not self.typing_active:
-                        break
-                    keyboard.write(char)
-                    time.sleep(max(0.01, 60.0 / max(1, self.speed_var.get() * 5)))
-                keyboard.press_and_release('enter')
-                self.progress_var.set((idx + 1) * 100 / total)
-            self.typing_finished()
-        except Exception as e:
-            messagebox.showerror("Typing Error", str(e))
-        finally:
-            self.progress_var.set(0)
-
-    def typing_finished(self):
-        self.typing_active = False
-        self.start_button.config(state=tk.NORMAL)
-        self.stop_button.config(state=tk.DISABLED)
-        self.pause_button.config(state=tk.DISABLED)
-        self.status_var.set("Typing completed")
-
-    def stop_typing(self):
-        self.typing_active = False
-        self.typing_finished()
-
-    def pause_typing(self):
-        if self.typing_active:
-            self.typing_active = False
-            self.status_var.set("Typing paused")
-        else:
-            self.typing_active = True
-            self.status_var.set("Typing resumed")
-            self.start_typing()
-
-    def focus_discord(self):
-        if gw is None:
-            messagebox.showerror("pygetwindow Missing", "pygetwindow is not installed.")
-            return False
-        try:
-            windows = gw.getWindowsWithTitle("Discord")
-            if not windows:
-                self.discord_status_var.set("Discord: Not Found")
-                return False
-            win = windows[0]
-            win.activate()
-            self.discord_status_var.set("Discord: Focused")
-            return True
-        except Exception as e:
-            self.discord_status_var.set("Discord: Error")
-            messagebox.showerror("Discord Focus Error", str(e))
-            return False
+    def update_status_bar(self, msg: str):
+        self.status_bar.config(text=msg)
 
     def detect_discord(self):
-        if gw is None:
-            messagebox.showerror("pygetwindow Missing", "pygetwindow is not installed.")
-            return False
-        try:
-            windows = gw.getWindowsWithTitle("Discord")
-            if not windows:
-                self.discord_status_var.set("Discord: Not Found")
-                messagebox.showinfo("Detect Discord", "Discord window not found.")
-                return False
-            self.discord_status_var.set("Discord: Detected")
-            messagebox.showinfo("Detect Discord", "Discord window detected.")
-            return True
-        except Exception as e:
-            self.discord_status_var.set("Discord: Error")
-            messagebox.showerror("Discord Detect Error", str(e))
-            return False
+        if detect_discord_window():
+            self.update_status_bar("Discord detected.")
+        else:
+            self.update_status_bar("Discord not found.")
 
-    def run_heal_diagnostics(self):
-        try:
-            results = run_heal_diagnostics()
-            messagebox.showinfo("Heal Diagnostics", json.dumps(results, indent=2))
-        except Exception as e:
-            messagebox.showerror("Diagnostics Error", str(e))
+    def focus_discord(self):
+        if focus_discord_window():
+            self.update_status_bar("Discord focused.")
+        else:
+            self.update_status_bar("Focus failed.")
 
-    def show_text_stats(self):
-        if not self.text_content:
-            messagebox.showinfo("Text Statistics", "No text loaded.")
+    def send_message(self):
+        message = self.text_area.get(1.0, tk.END).strip()
+        if not message:
+            show_error_dialog("No Message", "Please enter a message to send.")
             return
-        stats = get_text_stats(self.text_content)
-        msg = f"Text Statistics:\n\n"
-        msg += f"Lines: {stats.get('lines', 0)}\n"
-        msg += f"Characters: {stats.get('characters', 0)}\n"
-        msg += f"Words: {stats.get('words', 0)}\n"
-        msg += f"Non-empty lines: {stats.get('nonempty_lines', 0)}\n"
-        msg += f"Avg line length: {stats.get('avg_line_length', 0)}\n"
-        msg += f"Avg word length: {stats.get('avg_word_length', 0)}"
-        messagebox.showinfo("Text Statistics", msg)
+        if send_message_advanced(message, self.settings):
+            self.update_status_bar("Message sent.")
+        else:
+            self.update_status_bar("Send failed.")
 
-    def show_settings(self):
-        settings_window = tk.Toplevel(self)
-        settings_window.title("Settings")
-        settings_window.geometry("400x300")
-        settings_window.transient(self)
-        settings_window.grab_set()
-        ttk.Label(settings_window, text="Settings", font=("Arial", 12, "bold")).pack(pady=10)
-        speed_frame = ttk.Frame(settings_window)
-        speed_frame.pack(fill=tk.X, padx=20, pady=10)
-        ttk.Label(speed_frame, text="Typing Speed (WPM):").pack(anchor=tk.W)
-        speed_scale = ttk.Scale(speed_frame, from_=10, to=200, variable=self.speed_var, orient=tk.HORIZONTAL)
-        speed_scale.pack(fill=tk.X, pady=5)
-        button_frame = ttk.Frame(settings_window)
-        button_frame.pack(pady=20)
-        ttk.Button(button_frame, text="OK", command=settings_window.destroy).pack(side=tk.LEFT, padx=5)
-        ttk.Button(button_frame, text="Cancel", command=settings_window.destroy).pack(side=tk.LEFT, padx=5)
+    def preview_message(self):
+        message = self.text_area.get(1.0, tk.END).strip()
+        if not message:
+            show_error_dialog("No Message", "Please enter a message to preview.")
+            return
+        self.message_preview.create_preview_window(message)
+
+    def apply_theme(self, theme: str):
+        t = THEMES.get(theme, THEMES["Discord"])
+        self.configure(bg=t["bg"])
+        if hasattr(self, 'status_bar'):
+            self.status_bar.config(bg=t["status"], fg=t["fg"])
+        if hasattr(self, 'text_area'):
+            self.text_area.config(bg=t["bg"], fg=t["fg"])
+
+    def select_font(self):
+        fonts = list(font.families())
+        f = simpledialog.askstring("Font", "Enter font name:", initialvalue=self.settings.get("font", DEFAULT_FONT)[0])
+        if f and f in fonts:
+            self.settings["font"] = (f, self.settings.get("font", DEFAULT_FONT)[1])
+            save_settings(self.settings)
+            self.text_area.config(font=self.settings["font"])
+            self.update_status_bar(f"Font set to {f}")
+        else:
+            self.update_status_bar("Font not changed.")
 
     def show_about(self):
-        about_text = """VaxityAutoTyper v0.01\n\nDiscord AutoTyper Tool\n\nA sophisticated Discord automation tool for typing text files\nwith advanced error handling and diagnostics.\n\nFeatures:\n- File text processing\n- Discord window detection\n- Automated typing with configurable speed\n- Comprehensive error handling\n- Built-in diagnostics and repair tools\n\n© 2024 VaxityAutoTyper"""
-        messagebox.showinfo("About VaxityAutoTyper", about_text)
+        messagebox.showinfo("About", "VaxityAutoTyper v0.01\nDiscord Automation GUI\n(c) 2025 Vaxity")  # type: ignore
 
-    def on_closing(self):
-        if self.typing_active:
-            if not messagebox.askokcancel("Quit", "Typing is active. Quit anyway?"):
-                return
-        self.destroy()
+    def show_help(self):
+        messagebox.showinfo("Help", "Type or load a message, then use the buttons to process or send to Discord.\nUse the menu for settings, backup, and diagnostics.")  # type: ignore
+
+    def run_heal_diagnostics_dialog(self):
+        results = run_heal_diagnostics(os.path.abspath(sys.argv[0]))
+        msg = '\n'.join(f"{k}: {v}" for k, v in results.items())
+        messagebox.showinfo("Heal Diagnostics", msg)  # type: ignore
+        self.update_status_bar("Heal diagnostics complete.")
+
+# --- Utility functions for text processing ---
+def split_lines(text: str) -> list[str]:
+    return text.replace('\r\n', '\n').replace('\r', '\n').split('\n')
+
+def trim_whitespace(lines: list[str]) -> list[str]:
+    return [line.strip() for line in lines]
+
+def remove_empty_lines(lines: list[str]) -> list[str]:
+    return [line for line in lines if line.strip()]
+
+def get_text_stats(text: str) -> dict[str, int]:
+    lines = split_lines(text)
+    chars = len(text)
+    nonempty = [l for l in lines if l.strip()]
+    return {
+        "Total Lines": len(lines),
+        "Non-Empty Lines": len(nonempty),
+        "Characters": chars,
+        "Words": sum(len(l.split()) for l in lines),
+    }
+
+# --- Main Entrypoint (implemented) ---
+def main():
+    try:
+        app = BasicTkWindow()
+        app.mainloop()
+    except Exception as e:
+        log_error('AppCrash', str(e), 'main')
+        show_error_dialog("Fatal Error", str(e))
+
+if __name__ == "__main__":
+    main()
