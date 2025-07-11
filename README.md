@@ -78,7 +78,7 @@ This project follows advanced development practices:
 
 ## 📝 License
 
-This project is for educational and personal use.
+Standard MIT License
 
 ---
 
