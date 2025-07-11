@@ -78,7 +78,15 @@ This project follows advanced development practices:
 
 ## 📝 License
 
-Standard MIT License
+This software is licensed under a proprietary license.  
+All rights, title, and interest in and to the software are reserved by Spencer A K/Vaxity.
+
+You are granted a non-exclusive, non-transferable, revocable license to use the software for personal or internal business purposes only.  
+**Resale, distribution, or sublicensing of this software is strictly prohibited unless you have obtained prior written authorization from Spencer A K/Vaxity.**
+
+For more details, please see the [LICENSE.md](LICENSE.md) file.
+
+For inquiries regarding commercial use, resale, or distribution, contact: vaxitylol@gmail.com
 
 ---
 
