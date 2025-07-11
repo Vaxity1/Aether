@@ -1,6 +1,12 @@
 # Discord Automation GUI
 
-A feature-rich Discord message automation tool with a modern graphical user interface.
+A project that started out as a feature-rich Discord message automation tool with a modern graphical user interface that turned into
+a glorious dopamine rushed dance to get a autonomous AI Agent thats capable of self-repair, self-diagnosis, learning from past
+conversations, projects, failed code, failed terminal entries, etc.  This project for me has turned into a beautiful thing 
+where superior prompting techniques have lead to a plausible Autonomous AI Agent Template that is constantly improving itself, testing
+itself, tracking its own learning rate, etc.
+
+More to come!
 
 ## 🚀 Quick Start
 
